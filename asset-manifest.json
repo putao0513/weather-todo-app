@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/weather-todo-app/static/css/main.05b2602a.css",
-    "main.js": "/weather-todo-app/static/js/main.89a6fe68.js",
+    "main.js": "/weather-todo-app/static/js/main.c6f141a4.js",
     "static/js/453.346e9a29.chunk.js": "/weather-todo-app/static/js/453.346e9a29.chunk.js",
     "index.html": "/weather-todo-app/index.html",
     "main.05b2602a.css.map": "/weather-todo-app/static/css/main.05b2602a.css.map",
-    "main.89a6fe68.js.map": "/weather-todo-app/static/js/main.89a6fe68.js.map",
+    "main.c6f141a4.js.map": "/weather-todo-app/static/js/main.c6f141a4.js.map",
     "453.346e9a29.chunk.js.map": "/weather-todo-app/static/js/453.346e9a29.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.05b2602a.css",
-    "static/js/main.89a6fe68.js"
+    "static/js/main.c6f141a4.js"
   ]
 }
