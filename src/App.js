@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import pinyin from 'chinese-to-pinyin'; // 使用新版拼音库
+import pinyin from 'chinese-to-pinyin';
 
-const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // ← 使用你自己的 key
+const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // 替换为你的 OpenWeatherMap Key
 
 function App() {
   const [city, setCity] = useState('');
@@ -20,13 +20,16 @@ function App() {
     let cityToSearch = city.trim();
     const isChinese = /[\u4e00-\u9fa5]/.test(cityToSearch);
 
-    console.log('💡原始输入：', cityToSearch);
-    console.log('🔍是否为中文？', isChinese);
+    console.log('💡 原始输入：', cityToSearch);
+    console.log('🔍 是否为中文：', isChinese);
 
-    // 中文 → 拼音（使用 chinese-to-pinyin）
     if (isChinese) {
-      cityToSearch = pinyin(cityToSearch, { removeTone: true }).replace(/\s+/g, '');
-      console.log('✅转换为拼音：', cityToSearch);
+      try {
+        cityToSearch = pinyin(cityToSearch, { toneType: 'none' }).replace(/\s+/g, '');
+        console.log('✅ 转换为拼音：', cityToSearch);
+      } catch (error) {
+        console.warn('⚠️ 拼音转换失败，使用原始输入：', cityToSearch);
+      }
     }
 
     const query = `${cityToSearch},cn`;
@@ -37,7 +40,7 @@ function App() {
     setWeatherError('');
     fetch(finalUrl)
       .then(res => {
-        if (!res.ok) throw new Error('城市不存在或拼写错误。请确认拼写，或尝试输入拼音');
+        if (!res.ok) throw new Error('城市不存在或拼写错误，请检查拼音是否正确。');
         return res.json();
       })
       .then(data => {
@@ -72,16 +75,16 @@ function App() {
       <h1>天气查询 + 任务列表</h1>
 
       <div style={{ marginBottom: 30 }}>
-        <h2>天气查询</h2>
+        <h2>🌤 天气查询</h2>
         <input
           type="text"
           value={city}
-          placeholder="输入城市名（支持中文）"
+          placeholder="输入城市名（中文或拼音）"
           onChange={(e) => setCity(e.target.value)}
         />
         <button onClick={fetchWeather} style={{ marginLeft: 10 }}>查询天气</button>
         <p style={{ fontSize: 12, color: '#888', marginTop: 5 }}>
-          提示：输入城市名，支持中文自动转拼音（如：上海 → shanghai）
+          支持中文转拼音（如：上海 → shanghai）
         </p>
 
         {weatherError && (
@@ -100,7 +103,7 @@ function App() {
       </div>
 
       <div>
-        <h2>任务列表</h2>
+        <h2>📝 任务列表</h2>
         <input
           type="text"
           value={taskInput}
@@ -110,7 +113,7 @@ function App() {
         />
         <button onClick={addTask} style={{ marginLeft: 10 }}>添加任务</button>
 
-        <ul>
+        <ul style={{ marginTop: 10 }}>
           {tasks.map(task => (
             <li key={task.id} style={{ margin: '8px 0' }}>
               {task.text}
