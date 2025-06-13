@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import pinyin from 'chinese-to-pinyin';
+import { pinyin } from 'pinyin-pro'; // 使用支持去声调的库
 
-const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // 替换为你的 OpenWeatherMap Key
+const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // ← 使用你自己的 key！
 
 function App() {
   const [city, setCity] = useState('');
@@ -24,12 +24,9 @@ function App() {
     console.log('🔍 是否为中文：', isChinese);
 
     if (isChinese) {
-      try {
-        cityToSearch = pinyin(cityToSearch, { toneType: 'none' }).replace(/\s+/g, '');
-        console.log('✅ 转换为拼音：', cityToSearch);
-      } catch (error) {
-        console.warn('⚠️ 拼音转换失败，使用原始输入：', cityToSearch);
-      }
+      // 转为无声调拼音
+      cityToSearch = pinyin(cityToSearch, { toneType: 'none', type: 'array' }).join('');
+      console.log('✅ 转换为拼音：', cityToSearch);
     }
 
     const query = `${cityToSearch},cn`;
@@ -75,16 +72,16 @@ function App() {
       <h1>天气查询 + 任务列表</h1>
 
       <div style={{ marginBottom: 30 }}>
-        <h2>🌤 天气查询</h2>
+        <h2>天气查询</h2>
         <input
           type="text"
           value={city}
-          placeholder="输入城市名（中文或拼音）"
+          placeholder="输入城市名（支持中文）"
           onChange={(e) => setCity(e.target.value)}
         />
         <button onClick={fetchWeather} style={{ marginLeft: 10 }}>查询天气</button>
         <p style={{ fontSize: 12, color: '#888', marginTop: 5 }}>
-          支持中文转拼音（如：上海 → shanghai）
+          提示：支持中文城市名，会自动转换成拼音查询
         </p>
 
         {weatherError && (
@@ -103,7 +100,7 @@ function App() {
       </div>
 
       <div>
-        <h2>📝 任务列表</h2>
+        <h2>任务列表</h2>
         <input
           type="text"
           value={taskInput}
@@ -113,7 +110,7 @@ function App() {
         />
         <button onClick={addTask} style={{ marginLeft: 10 }}>添加任务</button>
 
-        <ul style={{ marginTop: 10 }}>
+        <ul>
           {tasks.map(task => (
             <li key={task.id} style={{ margin: '8px 0' }}>
               {task.text}
