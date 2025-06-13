@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import pinyin from 'pinyin'; // 引入拼音库
 
-const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // ←←← 这里一定记得替换成你从 OpenWeatherMap 拿到的 API Key！
+const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // ← 换成你自己的 key！
 
 function App() {
   const [city, setCity] = useState('');
@@ -14,11 +15,19 @@ function App() {
   const [taskInput, setTaskInput] = useState('');
 
   const fetchWeather = () => {
-    if (!city) return;
+    if (!city.trim()) return;
+
+    let cityToSearch = city.trim();
+    const isChinese = /[\u4e00-\u9fa5]/.test(cityToSearch);
+    if (isChinese) {
+      const pyArr = pinyin(cityToSearch, { style: pinyin.STYLE_NORMAL });
+      cityToSearch = pyArr.flat().join('');
+    }
+
     setWeatherError('');
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`)
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityToSearch}&appid=${WEATHER_API_KEY}&units=metric`)
       .then(res => {
-        if (!res.ok) throw new Error('城市不存在或拼写错误');
+        if (!res.ok) throw new Error('城市不存在或拼写错误。请确认城市名拼写，或尝试输入拼音');
         return res.json();
       })
       .then(data => setWeather(data))
@@ -53,12 +62,14 @@ function App() {
         <input
           type="text"
           value={city}
-          placeholder="输入城市名"
+          placeholder="输入城市名（支持中文）"
           onChange={(e) => setCity(e.target.value)}
         />
         <button onClick={fetchWeather} style={{ marginLeft: 10 }}>查询天气</button>
 
-        {weatherError && <p style={{ color: 'red' }}>{weatherError}</p>}
+        {weatherError && (
+          <p style={{ color: 'red', marginTop: 10 }}>{weatherError}</p>
+        )}
 
         {weather && (
           <div style={{ marginTop: 10 }}>
