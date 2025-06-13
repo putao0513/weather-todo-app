@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import pinyin from 'chinese-to-pinyin'; // 替换旧库
+import pinyin from 'chinese-to-pinyin'; // 使用新版拼音库
 
-const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // ← 替换成你自己的 key！
+const WEATHER_API_KEY = '7b79783eaa789574bdc8f5299116acae'; // ← 使用你自己的 key
 
 function App() {
   const [city, setCity] = useState('');
@@ -20,17 +20,19 @@ function App() {
     let cityToSearch = city.trim();
     const isChinese = /[\u4e00-\u9fa5]/.test(cityToSearch);
 
-    console.log('原始输入：', cityToSearch);
+    console.log('💡原始输入：', cityToSearch);
+    console.log('🔍是否为中文？', isChinese);
 
     // 中文 → 拼音（使用 chinese-to-pinyin）
     if (isChinese) {
       cityToSearch = pinyin(cityToSearch, { removeTone: true }).replace(/\s+/g, '');
-      console.log('拼音转换后：', cityToSearch);
+      console.log('✅转换为拼音：', cityToSearch);
     }
 
     const query = `${cityToSearch},cn`;
     const finalUrl = `https://api.openweathermap.org/data/2.5/weather?q=${query}&appid=${WEATHER_API_KEY}&units=metric`;
-    console.log('最终请求 URL：', finalUrl);
+
+    console.log('🌐 最终请求 URL：', finalUrl);
 
     setWeatherError('');
     fetch(finalUrl)
@@ -39,11 +41,11 @@ function App() {
         return res.json();
       })
       .then(data => {
-        console.log('天气数据返回成功 ✅：', data);
+        console.log('✅ 天气数据获取成功：', data);
         setWeather(data);
       })
       .catch(err => {
-        console.error('请求失败 ❌：', err);
+        console.error('❌ 请求失败：', err);
         setWeather(null);
         setWeatherError(err.message);
       });
@@ -79,7 +81,7 @@ function App() {
         />
         <button onClick={fetchWeather} style={{ marginLeft: 10 }}>查询天气</button>
         <p style={{ fontSize: 12, color: '#888', marginTop: 5 }}>
-          提示：请确认城市名拼写是否正确（支持中文/拼音）
+          提示：输入城市名，支持中文自动转拼音（如：上海 → shanghai）
         </p>
 
         {weatherError && (
